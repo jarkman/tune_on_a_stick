@@ -43,19 +43,24 @@ int getNote( int line, int beat )
 }
     
     
+// This is called on every beat to generate backing    
+// It should do whatever note generation and playing it deems appropriate
+// It can use the midiNotes array for storage via setNote( BACKING_LINE, beat, note ), if it is
+// convenient to do generation (say) bar-by-bar instead of note-by-note
+
 int generateBacking( int beat )
 {
   int i = beat;
   do
   {
     int bb = (beat + 2) % beats_per_sweep; // pick a lead line note from 2 notes into the future
-    int note = getNote( LEAD_LINE, bb );
-    note -= 24;
+    int note = getNote( LEAD_LINE, bb );    // notes are midi note numbers
+    note -= 24;      // shift it down a couple of octaves
     
     if( i == beat )
-      setAndPlayNote( BACKING_LINE, beat, note );
+      setAndPlayNote( BACKING_LINE, beat, note );  // play the note that's due now
     else
-      setNote( BACKING_LINE, beat, note );
+      setNote( BACKING_LINE, beat, note );        // store up notes for the future (these are currently not used, as we make and play a new note every time we are called
       
     i++;
     i = i % beats_per_sweep;
