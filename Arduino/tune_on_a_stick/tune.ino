@@ -20,19 +20,27 @@ void clearTune()
 
 void setAndPlayNote( int line, int beat, int note )
 {
-  setNote( line, beat, note );
+
+  // Never set a note without playing it, otherwise we can't send the note-off message properly
+  //setNote( line, beat, note );
+  midiNotes[line][beat] = note;
   midi_note( line, note );
-  int offBeat = (beat + beats_per_sweep - 2) % beats_per_sweep;
+  
+
+  // turn off the last note for this channel
+  int offBeat = (beat + beats_per_sweep - 1) % beats_per_sweep;
   
   midi_note_off( line, getNote(line, offBeat));
+
 }
 
+/*
 void setNote( int line, int beat, int note )
 {
   midiNotes[line][beat] = note;  
   
 }
-
+*/
 int getNote( int line, int beat )
 {
   return midiNotes[line][beat];  
@@ -46,6 +54,14 @@ int getNote( int line, int beat )
 
 int generateBacking( int beat )
 {
+  
+  int bb = (beat + 2) % beats_per_sweep; // pick a lead line note from 2 notes into the future
+  int note = getNote( LEAD_LINE, bb );    // notes are midi note numbers
+  note -= 24;      // shift it down a couple of octaves
+    
+  setAndPlayNote( BACKING_LINE, beat, note );  
+      
+  /*    
   int i = beat;
   do
   {
@@ -55,12 +71,15 @@ int generateBacking( int beat )
     
     if( i == beat )
       setAndPlayNote( BACKING_LINE, beat, note );  // play the note that's due now
+     
     else
       setNote( BACKING_LINE, beat, note );        // store up notes for the future (these are currently not used, as we make and play a new note every time we are called
+     
       
     i++;
     i = i % beats_per_sweep;
   }
   while( i != beat );
+  */
 }
 

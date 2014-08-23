@@ -23,7 +23,7 @@
 #define STATE_IDLE 0
 #define STATE_PLAYING 1
 
-#define MIDI_BACKING_VOLUME 50
+#define MIDI_BACKING_VOLUME 75
 #define BACKING_FADE_BARS 4 // fade backing in or out over this many bars
 
 int state = STATE_IDLE;
@@ -149,7 +149,7 @@ void doBeat( int beat )
     }
     else
     {
-      //setNote( LEAD_LINE, beat, 0 );
+      setAndPlayNote( LEAD_LINE, beat, 0 ); // terminate the last note
     }
     
     generateBacking( beat );
