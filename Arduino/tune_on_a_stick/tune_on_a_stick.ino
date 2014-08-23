@@ -5,6 +5,8 @@
 
 #define SIMULATOR
 
+#define CHANNELS 1
+#define LEAD_CHANNEL 0
 
 #define MAX_BEATS_PER_BAR 6
 #define MAX_BARS_PER_SWEEP 3
@@ -138,7 +140,7 @@ void doBeat( int beat )
       if( state != STATE_PLAYING )
         startPlaying();
         
-      int note = noteForRange( this_beat_range, 0 );
+      int note = noteForRange( this_beat_range, LEAD_CHANNEL );
       //Serial.println(note);
       
       setAndPlayNote( LEAD_LINE, beat, note );

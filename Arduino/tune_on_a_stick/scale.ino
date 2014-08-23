@@ -1,7 +1,7 @@
 
 #define NUM_ACTIVES 12
 #define NUM_SCALES 1
-#define CHANNELS 1
+
 
 unsigned short int scaleMajor[] = { 0, 2, 4, 5, 7, 9, 11,  255 };
 unsigned short int scaleMinor[] = { 0, 2, 3, 5, 7, 8, 10,  255 };

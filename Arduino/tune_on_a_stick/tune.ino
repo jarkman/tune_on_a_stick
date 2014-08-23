@@ -57,9 +57,15 @@ int generateBacking( int beat )
   
   int bb = (beat + 2) % beats_per_sweep; // pick a lead line note from 2 notes into the future
   int note = getNote( LEAD_LINE, bb );    // notes are midi note numbers
+  
+   // If we were picking notes in some other way, we might want to get them from 
+   // activeNotes[LEAD_CHANNEL] which is the array of note numbers that the kead line is going to use  
+   // It is numActives[LEAD_CHANNEL] long.
+
+
   note -= 24;      // shift it down a couple of octaves
     
-  setAndPlayNote( BACKING_LINE, beat, note );  
+   setAndPlayNote( BACKING_LINE, beat, note );  
       
   /*    
   int i = beat;
