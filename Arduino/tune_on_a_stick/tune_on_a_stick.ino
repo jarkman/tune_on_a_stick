@@ -23,13 +23,13 @@
 #define STATE_IDLE 0
 #define STATE_PLAYING 1
 
-#define MIDI_BACKING_VOLUME 74
+#define MIDI_BACKING_VOLUME 50
 #define BACKING_FADE_BARS 4 // fade backing in or out over this many bars
 
 int state = STATE_IDLE;
 
 Servo myservo; 
-int pos = 0;
+long angle = 0;
 long start_time = 0;
 long millis_per_sweep = 3000;
 int beats_per_bar = 4;
@@ -42,6 +42,8 @@ long beat_start_time = 0;
 
 int num_no_people = 0;
 int num_tune_bars = 0;
+
+long num_total_beats = 0;
 
 
 
@@ -79,12 +81,12 @@ void loop()
 
   loopLedstrip( color );
   
-  pos = (((millis() - start_time) * 180L) / millis_per_sweep) % 180;
-   myservo.write(pos); 
+  angle = (((millis() - start_time) * 180L) / millis_per_sweep) % 180L;
+   myservo.write((int) angle); 
  
    this_beat_range = read_ranger();
 
-  int beat = (pos * beats_per_sweep ) / 180;
+  int beat = (angle * beats_per_sweep ) / 180;
   if( beat != last_beat ) // Time to start a note!
   {
 
@@ -110,6 +112,8 @@ void doBeat( int beat )
     Serial.println("cm");
     */
 #endif
+
+    num_total_beats++;
 
     last_beat = beat;
 
@@ -267,6 +271,11 @@ void newTune()
     Serial.print( 60000 / beat_duration );
     Serial.println(" bpm");
     Serial.println("");
+    
+      Serial.print( num_total_beats );
+    Serial.println(" total beats so far");
+    Serial.println("");
+    
  
     
 #endif

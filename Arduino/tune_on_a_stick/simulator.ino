@@ -22,6 +22,7 @@ int simulatorRange( int beat ) // return a simulated range for this beat
     Serial.println( "");
     Serial.print("Simulator sweep ");
     Serial.println( totalSweeps );
+    Serial.println( "");
 #endif
   }
   

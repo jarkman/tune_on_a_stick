@@ -34,6 +34,16 @@ void pickRandomScale()
   // rootNote (lowest note in the list of allowed active notes) varies, but only for large movements 
   int rootNote = 50 + random(30); 
   
+#ifdef DEBUG
+
+    Serial.println("");
+    Serial.print("Using scale number ");
+    Serial.print(scale); 
+    
+    Serial.print( " with root note number " );
+    Serial.println(rootNote);
+    
+#endif
   // phill temporary - this choses a list of allowed notes (actives)
   // favouring the root, fourth, and fifth degree of the scale
   // it DOES also pick other notes but the gps latWhiskers in the simulateGPS() tends
@@ -81,12 +91,16 @@ void pickRandomScale()
       activeNotes[channel][a] = 0;
 
 
-  #ifdef DO_LOGGING
-    Serial.print ("Chanl "); Serial.print (channel, DEC);
-    Serial.print (" activenotes: ");
-    for( int i = 0; i < NUM_ACTIVES; i ++ ){
+  #ifdef DEBUG
+    Serial.print ("Channel ");
+    Serial.print (channel, DEC);
+    Serial.print (" active notes: ");
+    for( int i = 0; i < NUM_ACTIVES; i ++ )
+    {
       Serial.print (activeNotes[channel][i], DEC);
+      Serial.print (" ");
     }
+    Serial.println (" ");
   #endif
   }// channel loop
   
@@ -94,6 +108,8 @@ void pickRandomScale()
 
 void setupBars()
 {
+  millis_per_sweep = 1500 + random(1500);
+  
   beats_per_bar = 4 + random( 3 );
   bars_per_sweep = 10 / beats_per_bar; // 2 or 1
   beats_per_sweep = beats_per_bar * bars_per_sweep;
