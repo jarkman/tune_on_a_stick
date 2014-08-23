@@ -1,8 +1,4 @@
-#define MAX_BEATS_PER_BAR 6
-#define MAX_BARS_PER_SWEEP 3
 
-
-#define TUNE_LIST_SIZE MAX_BEATS_PER_BAR * MAX_BARS_PER_SWEEP
 
 unsigned short int midiNotes[TUNE_LIST_SIZE][LINES];
 

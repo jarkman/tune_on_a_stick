@@ -1,7 +1,24 @@
 
 #include <Servo.h> 
 
-//#define DEBUG
+#define DEBUG
+
+#define SIMULATOR
+
+
+#define MAX_BEATS_PER_BAR 6
+#define MAX_BARS_PER_SWEEP 3
+
+
+#define TUNE_LIST_SIZE MAX_BEATS_PER_BAR * MAX_BARS_PER_SWEEP
+#define LINES 2
+#define LEAD_LINE 0
+#define BACKING_LINE 1
+
+#define MAX_DISTANCE 200 // cm
+#define MIN_DISTANCE 50 // cm
+
+#define IDLE_SWEEPS 2 // if we see no people for this long, go idle
 
 #define STATE_IDLE 0
 #define STATE_PLAYING 1
@@ -27,12 +44,6 @@ int num_no_people = 0;
 int num_tune_bars = 0;
 
 
-#define LINES 2
-#define LEAD_LINE 0
-#define BACKING_LINE 1
-
-#define MAX_DISTANCE 200 // cm
-
 
 
 int this_beat_range = 0;
@@ -55,6 +66,7 @@ void setup() {
   setupLed();
   setupTune();
   setupLedstrip();
+  setupSimulator();
   
   start_time = millis();
  
@@ -76,7 +88,11 @@ void loop()
   if( beat != last_beat ) // Time to start a note!
   {
 
-   doBeat( beat );
+ #ifdef SIMULATOR
+   this_beat_range = simulatorRange( beat );
+ #endif
+ 
+    doBeat( beat );
    
     this_beat_range = 0;
     
@@ -188,7 +204,7 @@ void doBeat( int beat )
          
       num_no_people ++;
       
-      if( num_no_people >= 2 * beats_per_sweep  )
+      if( num_no_people >= IDLE_SWEEPS * beats_per_sweep  )
         startIdle();
     }
 }
@@ -230,7 +246,7 @@ void startIdle()
 
 boolean goodRange( int range )
 {
-  return range > 50 && range < MAX_DISTANCE;
+  return range > MIN_DISTANCE && range < MAX_DISTANCE;
 }
 
 void newTune()
