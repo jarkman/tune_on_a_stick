@@ -15,7 +15,15 @@ int simulatorRange( int beat ) // return a simulated range for this beat
 {
   
   if( beat == 0 )
+  {
     totalSweeps ++;
+  
+#ifdef DEBUG
+    Serial.println( "");
+    Serial.print("Simulator sweep ");
+    Serial.println( totalSweeps );
+#endif
+  }
   
   if( totalSweeps >= 20 ) // Every 20 sweeps, go idle for 2 sweeps to put us intp STATE_IDLE and prompt a scale change
     totalSweeps = 0;
@@ -23,8 +31,8 @@ int simulatorRange( int beat ) // return a simulated range for this beat
   if( totalSweeps <= IDLE_SWEEPS )
    {
 #ifdef DEBUG
-    Serial.print("Simulating idle, sweep ");
-    Serial.println( totalSweeps );
+    Serial.println("Simulating idle");
+
 #endif
     return 0;
   }    

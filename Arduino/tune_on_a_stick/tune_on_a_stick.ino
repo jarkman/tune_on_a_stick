@@ -24,7 +24,7 @@
 #define STATE_PLAYING 1
 
 #define MIDI_BACKING_VOLUME 74
-
+#define BACKING_FADE_BARS 4 // fade backing in or out over this many bars
 
 int state = STATE_IDLE;
 
@@ -251,13 +251,25 @@ boolean goodRange( int range )
 
 void newTune()
 {
-
   midiAllNotesOff(0);
   midiAllNotesOff(1);
   clearTune();
   pickRandomInstruments();
   pickRandomScale();
   
+  #ifdef DEBUG
+
+    Serial.println("");
+    Serial.print("newTune - ");
+    Serial.print(beats_per_bar); 
+    Serial.println(" beats per bar");
+    
+    Serial.print( 60000 / beat_duration );
+    Serial.println(" bpm");
+    Serial.println("");
+ 
+    
+#endif
 }
 
 void doBackingVolume()
@@ -268,22 +280,25 @@ void doBackingVolume()
     
     if( state == STATE_IDLE )
     {
-      volume = MIDI_BACKING_VOLUME >> num_tune_bars; // fade out
+      if( num_tune_bars < BACKING_FADE_BARS )
+        volume = (MIDI_BACKING_VOLUME * (BACKING_FADE_BARS - num_tune_bars)) / BACKING_FADE_BARS; // fade out
+      else
+        volume = 0;
     }
     else
     {
-      int shift = 8 - num_tune_bars;
-      if( shift < 0 )
-        shift = 0;
-     volume =  MIDI_BACKING_VOLUME >> shift; // fade in
+      if( num_tune_bars < BACKING_FADE_BARS )
+        volume = (MIDI_BACKING_VOLUME * num_tune_bars) / BACKING_FADE_BARS; // fade in
+      else
+        volume = MIDI_BACKING_VOLUME;
     }
     
 #ifdef DEBUG
-
+/*
     Serial.print("backing volume: ");
     Serial.print(volume); // Convert ping time to distance in cm and print result (0 = outside set distance range)
     Serial.println("");
-    
+*/    
 #endif
     midiSetChannelVolume(1,volume);
 }
