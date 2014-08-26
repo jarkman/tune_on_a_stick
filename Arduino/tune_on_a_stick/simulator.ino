@@ -44,10 +44,12 @@ int simulatorRange( int beat ) // return a simulated range for this beat
   // now update our array
   
   if( random( 5 ) == 0 ) // a 1 in 5 chance of changing any note whenever we think about it, so the pattern tends to persist, simulating a slow-moving set of people
+  {
     if( random( 2 ) == 0 ) // notes will often become silent
       rangeForBeat[beat] = 0; // no person detected
     else
       rangeForBeat[beat] = MIN_DISTANCE + random( MAX_DISTANCE - MIN_DISTANCE ); // pick a random valid range for this person
+  }
       
 #ifdef DEBUG
 

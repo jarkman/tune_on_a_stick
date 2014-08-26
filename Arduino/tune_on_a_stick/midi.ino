@@ -38,43 +38,58 @@
 #define MIDI_MASTER_VOLUME 0x01
 #define MIDI_SYSTEM_EXCLUSIVE_END 0xF7
 
-SoftwareSerial VS1053_MIDI(0, 2); // TX only, do not use the 'rx' side
-// on a Mega/Leonardo you may have to change the pin to one that 
-// software serial support uses OR use a hardware serial port!
+// General MIDI assigns drums to channel 10 by default (note: zero-based)
+#define PERCUSSION_CHANNEL 9
+
+#ifdef SPARKFUN_SHIELD
+    // For Sparkfun MIDI shield
+    #define VS1053_MIDI Serial
+#else
+    SoftwareSerial VS1053_MIDI(0, 2); // TX only, do not use the 'rx' side
+    // on a Mega/Leonardo you may have to change the pin to one that 
+    // software serial support uses OR use a hardware serial port!
+#endif
 
 void setup_midi()
 {
   
-  VS1053_MIDI.begin(31250); // MIDI uses a 'strange baud rate'
+   VS1053_MIDI.begin(31250); // MIDI uses a 'strange baud rate'
+
+#ifndef SPARKFUN_SHIELD
+   pinMode(VS1053_RESET, OUTPUT);
+   digitalWrite(VS1053_RESET, LOW);
+   delay(100);
+   digitalWrite(VS1053_RESET, HIGH);
+   delay(10);
+#endif
   
-  pinMode(VS1053_RESET, OUTPUT);
-  digitalWrite(VS1053_RESET, LOW);
-  delay(100);
-  digitalWrite(VS1053_RESET, HIGH);
-  delay(10);
-  
-  
-   midiSetMasterVolume( 0x0FFF ); // 0x1FFF is half volumne
+   // midiSetMasterVolume( 0x0FFF ); // 0x1FFF is half volumne
   
    // Lead instrument
-  midiSetChannelBank(0, VS1053_BANK_MELODY);
-  //midiSetInstrument(0, VS1053_GM1_OCARINA);
+#ifndef SPARKFUN_SHIELD
+   midiSetChannelBank(0, VS1053_BANK_MELODY);
+#endif
+
+   //midiSetInstrument(0, VS1053_GM1_OCARINA);
    //midiSetInstrument(0, VS1053_GM1_MELODIC_TOM);
    midiSetInstrument(0, VS1053_GM1_ACOUSTIC_GRAND_PIANO);
    midiSetChannelVolume(0, 127);
   
   
-  // BAcking instrument
-    midiSetChannelBank(1, VS1053_BANK_MELODY);
+   // Backing instrument
+#ifndef SPARKFUN_SHIELD
+   midiSetChannelBank(1, VS1053_BANK_MELODY);
+#endif
 
    midiSetInstrument(1, VS1053_GM1_SYNTH_BASS_1);
    midiSetChannelVolume(1, MIDI_BACKING_VOLUME);
 
-
   // 10 is the magic channel for percussion
-   midiSetChannelBank(10, VS1053_BANK_DRUMS2); 
-   midiSetInstrument(10, 82); // not sure why we have to set an instrument, since the note number sets the instrument. Odd.
-   midiSetChannelVolume(10, 127);
+#ifndef SPARKFUN_SHIELD
+   midiSetChannelBank(PERCUSSION_CHANNEL, VS1053_BANK_DRUMS2); 
+   midiSetInstrument(PERCUSSION_CHANNEL, 82); // not sure why we have to set an instrument, since the note number sets the instrument. Odd.
+#endif
+   midiSetChannelVolume(PERCUSSION_CHANNEL, 127);
   
 }
 
@@ -98,12 +113,12 @@ void midi_note_off( int line, int note )
 
 void midi_boom( )
 {
-      midiNoteOn(10, 35, 127);
+      midiNoteOn(PERCUSSION_CHANNEL, 35, 127);
 }
 
 void midi_tish( )
 {
-      midiNoteOn(10, 42, 127);
+      midiNoteOn(PERCUSSION_CHANNEL, 42, 127);
 }
 
 void midiSetInstrument(uint8_t chan, uint8_t inst) {
@@ -174,10 +189,8 @@ void midiNoteOff(uint8_t chan, uint8_t n, uint8_t vel) {
 }
 
 void midiAllNotesOff(uint8_t chan ) {
-
-  
   VS1053_MIDI.write(MIDI_CHAN_MSG | chan);
   VS1053_MIDI.write(0x7b);
-  VS1053_MIDI.write(123);
+  VS1053_MIDI.write((uint8_t) 0x00);
 }
-  
+

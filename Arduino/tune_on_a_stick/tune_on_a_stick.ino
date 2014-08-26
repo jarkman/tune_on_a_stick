@@ -1,10 +1,11 @@
 
 #include <Servo.h> 
 
-#define DEBUG
+// #define DEBUG
 
 #define SIMULATOR
 //#define USE_SERVO // Servo used to simulate rotation before the real rotating rig was available
+#define SPARKFUN_SHIELD
 
 #define CHANNELS 1
 #define LEAD_CHANNEL 0
@@ -52,11 +53,7 @@ int num_tune_bars = 0;
 
 long num_total_beats = 0;
 
-
-
-
 int this_beat_range = 0;
-
 
 void setup() {
   
@@ -93,15 +90,14 @@ void loop()
 
   loopLedstrip( color );
   
-  angle = (((millis() - sweep_start_time) * 180L) / millis_per_sweep) % 180L;
-  
  #ifdef USE_SERVO
    myservo.write((int) angle); 
  #endif
  
-   this_beat_range = read_ranger();
+  this_beat_range = read_ranger();
 
-  int beat = (angle * beats_per_sweep ) / 180;
+  int beat = getBeat();
+  
   if( beat != last_beat ) // Time to start a note!
   {
 
@@ -115,6 +111,11 @@ void loop()
     
   }
 
+}
+
+int getBeat() {
+   angle = (((millis() - sweep_start_time) * 180L) / millis_per_sweep) % 180L;
+   return (angle * beats_per_sweep ) / 180; 
 }
 
 void doBeat( int beat )
@@ -132,9 +133,7 @@ void doBeat( int beat )
 
     last_beat = beat;
 
-    beat_start_time = millis();
-
-   
+    beat_start_time = millis(); 
        
     if( beat % beats_per_bar == 0 ) // Start of bar
     {
@@ -150,8 +149,12 @@ void doBeat( int beat )
     
     if( goodRange( this_beat_range )) // min range to screen out junk on desk
     {
-      if( state != STATE_PLAYING )
+      if( state != STATE_PLAYING ) {
         startPlaying();
+        // Refresh the beat calculation, because it may have been changed by the new tune parameters
+        beat = getBeat();
+        last_beat = beat;
+      }
         
       int note = noteForRange( this_beat_range, LEAD_CHANNEL );
       //Serial.println(note);

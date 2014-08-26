@@ -1,6 +1,6 @@
 
 
-unsigned short int midiNotes[TUNE_LIST_SIZE][LINES];
+unsigned short int midiNotes[LINES][TUNE_LIST_SIZE];
 
 
 void setupTune()
