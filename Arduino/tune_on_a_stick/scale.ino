@@ -75,7 +75,7 @@ void setupBars()
 {
   //millis_per_sweep = 1500 + random(1500);
   
-  beats_per_bar = 4 + random( 3 );
+  beats_per_bar = 4 + random( 2 );
   bars_per_sweep = 10 / beats_per_bar; // 2 or 1
   beats_per_sweep = beats_per_bar * bars_per_sweep;
   beat_duration = millis_per_sweep / beats_per_sweep;

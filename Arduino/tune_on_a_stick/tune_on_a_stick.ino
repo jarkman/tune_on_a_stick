@@ -1,11 +1,11 @@
 
 #include <Servo.h> 
 
-// #define DEBUG
+#define DEBUG
 
 #define SIMULATOR
 //#define USE_SERVO // Servo used to simulate rotation before the real rotating rig was available
-#define SPARKFUN_SHIELD
+//#define SPARKFUN_SHIELD
 
 #define CHANNELS 1
 #define LEAD_CHANNEL 0
