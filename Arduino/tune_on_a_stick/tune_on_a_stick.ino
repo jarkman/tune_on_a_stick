@@ -4,6 +4,7 @@
 #define DEBUG
 
 #define SIMULATOR
+//#define USE_SERVO // Servo used to simulate rotation before the real rotating rig was available
 
 #define CHANNELS 1
 #define LEAD_CHANNEL 0
@@ -30,10 +31,14 @@
 
 int state = STATE_IDLE;
 
+#ifdef USE_SERVO
+#define SERVO_PIN 8
 Servo myservo; 
+#endif
+
 long angle = 0;
-long start_time = 0;
-long millis_per_sweep = 3000;
+long sweep_start_time = 0;
+long millis_per_sweep = 3000; // overwritten by loopSpeed
 int beats_per_bar = 4;
 int bars_per_sweep = 8;
 int beats_per_sweep;
@@ -63,28 +68,36 @@ void setup() {
    
   setup_ranger();
   
-  myservo.attach(8); 
+#ifdef USE_SERVO
+  myservo.attach(SERVO_PIN); 
+#endif
   
+    
+  setupSpeed();
+
   setup_scale();
   setup_midi();
   setupLed();
   setupTune();
   setupLedstrip();
   setupSimulator();
-  
-  start_time = millis();
+
  
 }
 
 void loop() 
 {
-
+ loopSpeed();
+ 
   uint32_t color = loopLed();
 
   loopLedstrip( color );
   
-  angle = (((millis() - start_time) * 180L) / millis_per_sweep) % 180L;
+  angle = (((millis() - sweep_start_time) * 180L) / millis_per_sweep) % 180L;
+  
+ #ifdef USE_SERVO
    myservo.write((int) angle); 
+ #endif
  
    this_beat_range = read_ranger();
 

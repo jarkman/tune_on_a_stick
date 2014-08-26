@@ -108,7 +108,7 @@ void pickRandomScale()
 
 void setupBars()
 {
-  millis_per_sweep = 1500 + random(1500);
+  //millis_per_sweep = 1500 + random(1500);
   
   beats_per_bar = 4 + random( 3 );
   bars_per_sweep = 10 / beats_per_bar; // 2 or 1
