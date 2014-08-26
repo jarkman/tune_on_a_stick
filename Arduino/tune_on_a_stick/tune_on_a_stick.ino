@@ -15,9 +15,10 @@
 
 
 #define TUNE_LIST_SIZE MAX_BEATS_PER_BAR * MAX_BARS_PER_SWEEP
-#define LINES 2
+#define LINES 3
 #define LEAD_LINE 0
 #define BACKING_LINE 1
+#define HARMONY_LINE 2
 
 #define MAX_DISTANCE 200 // cm
 #define MIN_DISTANCE 50 // cm
@@ -28,6 +29,7 @@
 #define STATE_PLAYING 1
 
 #define MIDI_BACKING_VOLUME 75
+#define MIDI_HARMONY_VOLUME 100
 #define BACKING_FADE_BARS 4 // fade backing in or out over this many bars
 
 int state = STATE_IDLE;
@@ -275,6 +277,7 @@ void newTune()
 {
   midiAllNotesOff(0);
   midiAllNotesOff(1);
+  midiAllNotesOff(2);
   clearTune();
   pickRandomInstruments();
   pickRandomScale();

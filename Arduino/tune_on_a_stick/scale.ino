@@ -44,52 +44,17 @@ void pickRandomScale()
     Serial.println(rootNote);
     
 #endif
-  // phill temporary - this choses a list of allowed notes (actives)
-  // favouring the root, fourth, and fifth degree of the scale
-  // it DOES also pick other notes but the gps latWhiskers in the simulateGPS() tends
-  // to result in mostly roots and fifths (which is no bad thing if we're aiming to imitatate western melodies)
+
   for( int channel = 0; channel < CHANNELS; channel ++ )
   {
-    int a  = 0;
-    int s = 0;
-    int root_fourth_fifth = 0; // 0 = root, 3 = fourth, 4 = fifth
     
-    for( int i = 0; a < NUM_ACTIVES; i ++ )
+    // Generate a scale based on the chosen root node and mode
+    for (int i = 0; i < NUM_ACTIVES; ++i) 
     {
-    
-      // favour root and fifth notes
-      if( random( 2 ) )
-      { // if the latitude bits are set - alternate between placing a root or fifth note
-        activeNotes[channel][a] = scales[scale][root_fourth_fifth] + rootNote;
-        
-        // alternate between picking a root or fifth
-        if (root_fourth_fifth == 0) 
-          root_fourth_fifth = 4;
-        else 
-          root_fourth_fifth = 0;
-
-        a++;
-      }
-      else
-      { // otherwise ascend through the scale as normal
-        activeNotes[channel][a] = scales[scale][s] + rootNote;
-        a++;
-      }
-       
-       s++;
-       if(  scales[scale][s] > 250 )
-       {
-         s = 0;
-         rootNote += 12;
-       }
-    
+      activeNotes[channel][i] = rootNote + scales[scale][i % 7] + 13 * (i / 7);
     }
     
-    numActives[channel] = a;
-    
-    for( ; a < NUM_ACTIVES; a ++ )
-      activeNotes[channel][a] = 0;
-
+    numActives[channel] = NUM_ACTIVES;
 
   #ifdef DEBUG
     Serial.print ("Channel ");
@@ -127,4 +92,16 @@ int noteForRange( int cm, int channel )
 {
   int index = ((MAX_DISTANCE - cm) * numActives[channel]) / MAX_DISTANCE; 
   return activeNotes[channel][index];
+}
+
+// Find an active note offset from the given note, useful for generating harmonies
+int noteAtOffset( int note, int channel, int offset ) {
+  
+  for (int i = 0; i < numActives[channel]; ++i)
+  {
+    if (activeNotes[channel][i] == note)
+      return activeNotes[channel][(i + offset) % numActives[channel]];     
+  }
+  
+  return 0; // not expected if the input note is valid
 }

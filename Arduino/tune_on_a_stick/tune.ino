@@ -62,30 +62,27 @@ int generateBacking( int beat )
    // activeNotes[LEAD_CHANNEL] which is the array of note numbers that the kead line is going to use  
    // It is numActives[LEAD_CHANNEL] long.
 
-
-  note -= 24;      // shift it down a couple of octaves
-    
-   setAndPlayNote( BACKING_LINE, beat, note );  
-      
-  /*    
-  int i = beat;
-  do
-  {
-    int bb = (beat + 2) % beats_per_sweep; // pick a lead line note from 2 notes into the future
-    int note = getNote( LEAD_LINE, bb );    // notes are midi note numbers
+  if (note > 0) {
     note -= 24;      // shift it down a couple of octaves
-    
-    if( i == beat )
-      setAndPlayNote( BACKING_LINE, beat, note );  // play the note that's due now
-     
-    else
-      setNote( BACKING_LINE, beat, note );        // store up notes for the future (these are currently not used, as we make and play a new note every time we are called
-     
-      
-    i++;
-    i = i % beats_per_sweep;
+  } 
+  else {
+    // if no lead note, 50% chance to leave backing as it was last time around
+    note = random(2) * getNote( BACKING_LINE, beat);
+  } 
+  
+  setAndPlayNote( BACKING_LINE, beat, note); 
+  
+  // Now the harmony...
+  note = getNote( LEAD_LINE, beat);
+  
+  if (note > 0) {
+     note = (random(3) > 0) ? noteAtOffset(note, LEAD_CHANNEL, random(3) + 2) : 0; // third, fourth or fifth?
+     if (note > 0) note -= 12;  // drop an octave
   }
-  while( i != beat );
-  */
+  
+  if (note == 0) // chance to repeat previous note
+     note = (random(3) > 0) ? getNote( HARMONY_LINE, (beat + beats_per_sweep - 1) % beats_per_sweep) : 0;
+     
+  setAndPlayNote( HARMONY_LINE, beat, note);
 }
 

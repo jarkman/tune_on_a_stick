@@ -84,6 +84,14 @@ void setup_midi()
    midiSetInstrument(1, VS1053_GM1_SYNTH_BASS_1);
    midiSetChannelVolume(1, MIDI_BACKING_VOLUME);
 
+   // Harmony instrument
+#ifndef SPARKFUN_SHIELD
+   midiSetChannelBank(2, VS1053_BANK_MELODY);
+#endif
+
+   midiSetInstrument(2, VS1053_GM1_SLAP_BASS_1);
+   midiSetChannelVolume(2, MIDI_HARMONY_VOLUME);
+   
   // 10 is the magic channel for percussion
 #ifndef SPARKFUN_SHIELD
    midiSetChannelBank(PERCUSSION_CHANNEL, VS1053_BANK_DRUMS2); 
@@ -97,6 +105,7 @@ void pickRandomInstruments()
 {
      midiSetInstrument(0, random(96));
      midiSetInstrument(1, random(96));
+     midiSetInstrument(2, random(96));
 }
 
 void midi_note( int line, int note )
