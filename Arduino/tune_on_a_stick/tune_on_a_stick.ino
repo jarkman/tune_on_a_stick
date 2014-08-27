@@ -1,10 +1,10 @@
 
 #include <Servo.h> 
 
-#define DEBUG
+//#define DEBUG
 
 //#define SIMULATOR  // simulate range data
-#define SIMULATE_ROTATION
+//#define SIMULATE_ROTATION
 
 //#define USE_SERVO // Servo used to simulate rotation before the real rotating rig was available
 //#define SPARKFUN_SHIELD
@@ -142,9 +142,9 @@ void doBeat( int beat )
   
 #ifdef DEBUG
 
-    //Serial.print("Beat range: ");
-    //Serial.print(this_beat_range); // Convert ping time to distance in cm and print result (0 = outside set distance range)
-    //Serial.println("cm");
+    Serial.print("Beat range: ");
+    Serial.print(this_beat_range); // Convert ping time to distance in cm and print result (0 = outside set distance range)
+    Serial.println("cm");
     
 #endif
 
@@ -235,11 +235,15 @@ void doBeat( int beat )
     {
       if( state == STATE_IDLE )
       {
-        if( num_tune_bars < LED_FADE_BARS )
-          brightness = (brightness * (LED_FADE_BARS - num_tune_bars)) / LED_FADE_BARS; 
-        else
-          brightness = brightness >> 4;  
+        // fade LED action out over many bars
+        int bars = num_tune_bars;
+
+        // put a floor on fade        
+        if( bars > LED_FADE_BARS - 16 )
+          bars = LED_FADE_BARS - 16;
         
+         brightness = (brightness * (LED_FADE_BARS - bars)) / LED_FADE_BARS; 
+
         if( beat % 2 == 0 ) // alternate coloyrs
           rgb( brightness, 0,0,256 , fade_duration ); 
         else

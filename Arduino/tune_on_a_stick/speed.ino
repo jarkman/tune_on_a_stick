@@ -48,6 +48,9 @@ Serial.println("off");
        long now = millis();
        long interval = now - indexStartTime;
        
+       if( interval < 1000 )
+         interval = 1000;
+         
 #ifdef DEBUG
 
     Serial.print("millis_per_sweep now: ");

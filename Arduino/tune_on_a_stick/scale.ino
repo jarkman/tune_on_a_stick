@@ -51,7 +51,7 @@ void pickRandomScale()
     // Generate a scale based on the chosen root node and mode
     for (int i = 0; i < NUM_ACTIVES; ++i) 
     {
-      activeNotes[channel][i] = rootNote + scales[scale][i % 7] + 13 * (i / 7);
+      activeNotes[channel][i] = rootNote + scales[scale][i % 7] + 12 * (i / 7);
     }
     
     numActives[channel] = NUM_ACTIVES;
