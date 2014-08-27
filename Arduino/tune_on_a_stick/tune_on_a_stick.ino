@@ -3,12 +3,21 @@
 
 #define DEBUG
 
-#define SIMULATOR
+//#define SIMULATOR  // simulate range data
+#define SIMULATE_ROTATION
+
 //#define USE_SERVO // Servo used to simulate rotation before the real rotating rig was available
 //#define SPARKFUN_SHIELD
 
+#define DO_BACKING
+
 #define CHANNELS 1
 #define LEAD_CHANNEL 0
+
+
+// General MIDI assigns drums to channel 10 by default (note: zero-based)
+#define PERCUSSION_CHANNEL 9
+
 
 #define MAX_BEATS_PER_BAR 6
 #define MAX_BARS_PER_SWEEP 3
@@ -20,7 +29,7 @@
 #define BACKING_LINE 1
 #define HARMONY_LINE 2
 
-#define MAX_DISTANCE 200 // cm
+
 #define MIN_DISTANCE 50 // cm
 
 #define IDLE_SWEEPS 2 // if we see no people for this long, go idle
@@ -28,9 +37,14 @@
 #define STATE_IDLE 0
 #define STATE_PLAYING 1
 
+
 #define MIDI_BACKING_VOLUME 75
 #define MIDI_HARMONY_VOLUME 100
+#define MIDI_PERCUSSION_VOLUME 127
+
 #define BACKING_FADE_BARS 4 // fade backing in or out over this many bars
+#define PERCUSSION_FADE_BARS 100
+#define LED_FADE_BARS 100
 
 int state = STATE_IDLE;
 
@@ -38,6 +52,8 @@ int state = STATE_IDLE;
 #define SERVO_PIN 8
 Servo myservo; 
 #endif
+
+
 
 long angle = 0;
 long sweep_start_time = 0;
@@ -56,6 +72,7 @@ int num_tune_bars = 0;
 long num_total_beats = 0;
 
 int this_beat_range = 0;
+int max_range = 200;
 
 void setup() {
   
@@ -71,7 +88,7 @@ void setup() {
   myservo.attach(SERVO_PIN); 
 #endif
   
-    
+  setupMotor();  
   setupSpeed();
 
   setup_scale();
@@ -81,7 +98,7 @@ void setup() {
   setupLedstrip();
   setupSimulator();
 
- 
+ setMotorPercent( 255 );
 }
 
 void loop() 
@@ -124,11 +141,11 @@ void doBeat( int beat )
 {
   
 #ifdef DEBUG
-/*
-    Serial.print("Beat range: ");
-    Serial.print(this_beat_range); // Convert ping time to distance in cm and print result (0 = outside set distance range)
-    Serial.println("cm");
-    */
+
+    //Serial.print("Beat range: ");
+    //Serial.print(this_beat_range); // Convert ping time to distance in cm and print result (0 = outside set distance range)
+    //Serial.println("cm");
+    
 #endif
 
     num_total_beats++;
@@ -159,7 +176,7 @@ void doBeat( int beat )
       }
         
       int note = noteForRange( this_beat_range, LEAD_CHANNEL );
-      //Serial.println(note);
+      
       
       setAndPlayNote( LEAD_LINE, beat, note );
       
@@ -172,8 +189,9 @@ void doBeat( int beat )
       setAndPlayNote( LEAD_LINE, beat, 0 ); // terminate the last note
     }
     
+#ifdef DO_BACKING    
     generateBacking( beat );
-    
+#endif
 
    int brightness = 256;
 
@@ -196,7 +214,7 @@ void doBeat( int beat )
     {
   
        // scale range to 0->256
-       int wheelPos = (this_beat_range * 256) / MAX_DISTANCE;
+       int wheelPos = (this_beat_range * 256) / max_range;
        
        uint32_t rgbc = Wheel(wheelPos);
        int r = R( rgbc );
@@ -216,10 +234,17 @@ void doBeat( int beat )
     else
     {
       if( state == STATE_IDLE )
+      {
+        if( num_tune_bars < LED_FADE_BARS )
+          brightness = (brightness * (LED_FADE_BARS - num_tune_bars)) / LED_FADE_BARS; 
+        else
+          brightness = brightness >> 4;  
+        
         if( beat % 2 == 0 ) // alternate coloyrs
           rgb( brightness, 0,0,256 , fade_duration ); 
         else
           rgb( brightness, 0,0,128 , fade_duration ); 
+      }
       else
         if( beat % 2 == 0 ) // alternate coloyrs
           rgb( brightness, 64,256,64 , fade_duration ); 
@@ -270,7 +295,7 @@ void startIdle()
 
 boolean goodRange( int range )
 {
-  return range > MIN_DISTANCE && range < MAX_DISTANCE;
+  return range > MIN_DISTANCE && range < max_range;
 }
 
 void newTune()
@@ -306,6 +331,8 @@ void doBackingVolume()
 {
   
     int volume;
+    int percussionVolume;
+    
     int fade_bars = 8;
     
     if( state == STATE_IDLE )
@@ -314,6 +341,11 @@ void doBackingVolume()
         volume = (MIDI_BACKING_VOLUME * (BACKING_FADE_BARS - num_tune_bars)) / BACKING_FADE_BARS; // fade out
       else
         volume = 0;
+        
+      if( num_tune_bars < PERCUSSION_FADE_BARS )
+        percussionVolume = (MIDI_PERCUSSION_VOLUME * (PERCUSSION_FADE_BARS - num_tune_bars)) / PERCUSSION_FADE_BARS; // fade out
+      else
+        percussionVolume = 0;
     }
     else
     {
@@ -321,6 +353,9 @@ void doBackingVolume()
         volume = (MIDI_BACKING_VOLUME * num_tune_bars) / BACKING_FADE_BARS; // fade in
       else
         volume = MIDI_BACKING_VOLUME;
+        
+        
+      percussionVolume = MIDI_PERCUSSION_VOLUME;
     }
     
 #ifdef DEBUG
@@ -331,5 +366,6 @@ void doBackingVolume()
 */    
 #endif
     midiSetChannelVolume(1,volume);
+    midiSetChannelVolume(PERCUSSION_CHANNEL,percussionVolume);
 }
 

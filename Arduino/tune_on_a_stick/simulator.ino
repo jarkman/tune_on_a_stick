@@ -48,7 +48,7 @@ int simulatorRange( int beat ) // return a simulated range for this beat
     if( random( 2 ) == 0 ) // notes will often become silent
       rangeForBeat[beat] = 0; // no person detected
     else
-      rangeForBeat[beat] = MIN_DISTANCE + random( MAX_DISTANCE - MIN_DISTANCE ); // pick a random valid range for this person
+      rangeForBeat[beat] = max_range + random( max_range - MIN_DISTANCE ); // pick a random valid range for this person
   }
       
 #ifdef DEBUG

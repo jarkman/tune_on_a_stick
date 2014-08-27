@@ -90,7 +90,7 @@ int pickScaleFromPosition()
 
 int noteForRange( int cm, int channel )
 {
-  int index = ((MAX_DISTANCE - cm) * numActives[channel]) / MAX_DISTANCE; 
+  int index = ((max_range - cm) * numActives[channel]) / max_range; 
   return activeNotes[channel][index];
 }
 

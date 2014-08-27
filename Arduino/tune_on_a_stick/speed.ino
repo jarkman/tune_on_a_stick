@@ -10,7 +10,7 @@ long indexStartTime = 0;
 
 int setupSpeed()
 {
-#ifdef SIMULATOR
+#ifdef SIMULATE_ROTATION
   millis_per_sweep = 3000;
 #endif 
 
@@ -25,7 +25,7 @@ int setupSpeed()
 int loopSpeed()
 {
   
-#ifdef SIMULATOR
+#ifdef SIMULATE_ROTATION
  long now = millis();
  long interval = now - sweep_start_time;
  if( interval > millis_per_sweep )

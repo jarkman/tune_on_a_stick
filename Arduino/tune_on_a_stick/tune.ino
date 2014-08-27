@@ -21,16 +21,19 @@ void clearTune()
 void setAndPlayNote( int line, int beat, int note )
 {
 
+    // turn off the last note for this channel
+  int offBeat = (beat + beats_per_sweep - 1) % beats_per_sweep;
+  
+  midi_note_off( line, getNote(line, offBeat));
+  
+  
   // Never set a note without playing it, otherwise we can't send the note-off message properly
   //setNote( line, beat, note );
   midiNotes[line][beat] = note;
   midi_note( line, note );
   
 
-  // turn off the last note for this channel
-  int offBeat = (beat + beats_per_sweep - 1) % beats_per_sweep;
-  
-  midi_note_off( line, getNote(line, offBeat));
+
 
 }
 

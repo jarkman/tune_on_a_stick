@@ -38,8 +38,7 @@
 #define MIDI_MASTER_VOLUME 0x01
 #define MIDI_SYSTEM_EXCLUSIVE_END 0xF7
 
-// General MIDI assigns drums to channel 10 by default (note: zero-based)
-#define PERCUSSION_CHANNEL 9
+
 
 #ifdef SPARKFUN_SHIELD
     // For Sparkfun MIDI shield
@@ -97,7 +96,7 @@ void setup_midi()
    midiSetChannelBank(PERCUSSION_CHANNEL, VS1053_BANK_DRUMS2); 
    midiSetInstrument(PERCUSSION_CHANNEL, 82); // not sure why we have to set an instrument, since the note number sets the instrument. Odd.
 #endif
-   midiSetChannelVolume(PERCUSSION_CHANNEL, 127);
+   midiSetChannelVolume(PERCUSSION_CHANNEL, MIDI_PERCUSSION_VOLUME);
   
 }
 

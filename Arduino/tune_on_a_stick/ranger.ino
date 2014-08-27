@@ -7,6 +7,7 @@
 //#define SERIAL_RANGE  // SERIAL_RANGE works but only when MIDI is turned off - a restriction in SoftwareSerial, I think
 
 #define RANGE_PIN  A0
+#define MAX_RANGE_PIN  A2 // pot to set max range
 
 #ifdef SERIAL_RANGE
 SoftwareSerial ranger_serial(11,10,true); // use receive on 11 only, third parameter inverts data
@@ -63,6 +64,18 @@ int read_ranger()
   }    
 #endif
   
+#ifdef SIMULATOR
+  max_range = 200;
+#else
+  
+  max_range = (float) analogRead( MAX_RANGE_PIN ) * 500.0 / 1023.0;
+    
+  #ifdef DEBUG
+    //Serial.print(max_range); 
+    //Serial.println(" max_range");
+#endif
+#endif
+
 
     return range_in_cm; // take the closest valid range during the period of this beat
 }
