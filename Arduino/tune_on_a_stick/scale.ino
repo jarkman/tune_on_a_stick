@@ -32,7 +32,7 @@ void pickRandomScale()
     int scale = pickScaleFromPosition();
   
   // rootNote (lowest note in the list of allowed active notes) varies, but only for large movements 
-  int rootNote = 50 + random(30); 
+  int rootNote = 50 + random(20); 
   
 #ifdef DEBUG
 
@@ -49,10 +49,30 @@ void pickRandomScale()
   {
     
     // Generate a scale based on the chosen root node and mode
+    
+    int a = 0;
+    int i = 0;
+    while( a < NUM_ACTIVES )
+    {
+      int octaveOffset = i % 7;
+      
+      if( i == 0 || i == 4 || random( 3 ) != 0 ) // prefer root and fifth notes
+      {
+        activeNotes[channel][a] = rootNote + scales[scale][octaveOffset] + 12 * (i / 7);
+        a ++;
+      }
+      i ++;
+    }
+    
+    /*
     for (int i = 0; i < NUM_ACTIVES; ++i) 
     {
-      activeNotes[channel][i] = rootNote + scales[scale][i % 7] + 12 * (i / 7);
+      int octaveOffset = i % 7;
+      
+      
+      activeNotes[channel][i] = rootNote + scales[scale][octaveOffset] + 12 * (i / 7);
     }
+    */
     
     numActives[channel] = NUM_ACTIVES;
 
