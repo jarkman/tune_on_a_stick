@@ -1,6 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 
 #define LED_STRIP_PIN 7
+#define STRIP_LEN 144
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = pin number (most are valid)
@@ -9,7 +10,7 @@
 //   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
 //   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
 //   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(144, LED_STRIP_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRIP_LEN, LED_STRIP_PIN, NEO_GRB + NEO_KHZ800);
 
 void setupLedstrip() {
   strip.begin();
@@ -20,6 +21,10 @@ long lastT = 0;
 
 void loopLedstrip(uint32_t c) {
   
+#ifdef DEBUG_RANGER
+  return;
+#endif
+
   long now = millis();
   if( now - lastT > 10 )
   {
@@ -29,6 +34,22 @@ void loopLedstrip(uint32_t c) {
       strip.show();   
 
   }
+}
+
+int showRangeOnStrip( int range )
+{
+     for(int i=0; i<strip.numPixels(); i++) 
+     {
+       uint32_t c = 0;
+       int n = abs( i - STRIP_LEN/2 );
+       int limit = (range * STRIP_LEN) / (2 * max_range);
+       
+       if( abs( n - limit)  < 3 )
+         c = 0x0404;
+         
+      strip.setPixelColor(i, c);
+    }
+    strip.show();
 }
 
 void wrainbow(uint8_t wait) {

@@ -11,6 +11,14 @@
 
 #define DO_BACKING
 
+//#define DEBUG_RANGER
+
+
+#ifdef DEBUG_RANGER
+#define SIMULATE_ROTATION
+#undef DO_BACKING
+#endif
+
 #define CHANNELS 1
 #define LEAD_CHANNEL 0
 
@@ -72,7 +80,7 @@ int num_tune_bars = 0;
 long num_total_beats = 0;
 
 int this_beat_range = 0;
-int max_range = 200;
+int max_range = 200;  // overwritten by max range from pot in read_ranger
 
 void setup() {
   
@@ -163,7 +171,11 @@ void doBeat( int beat )
     else
        midi_tish(); // Start of note, not at start of bar
     
- 
+ #ifdef DEBUG_RANGER
+      showRangeOnStrip( this_beat_range );
+#endif
+
+
     boolean got_range = false;
     
     if( goodRange( this_beat_range )) // min range to screen out junk on desk
@@ -175,6 +187,7 @@ void doBeat( int beat )
         last_beat = beat;
       }
         
+
       int note = noteForRange( this_beat_range, LEAD_CHANNEL );
       
       
