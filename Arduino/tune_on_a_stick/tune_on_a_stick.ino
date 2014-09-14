@@ -5,13 +5,14 @@
 
 //#define SIMULATOR  // simulate range data
 //#define SIMULATE_ROTATION
+//#define DEBUG_RANGER // use led strip as range bargraph
 
 //#define USE_SERVO // Servo used to simulate rotation before the real rotating rig was available
 //#define SPARKFUN_SHIELD
 
 #define DO_BACKING
 
-//#define DEBUG_RANGER
+
 
 
 #ifdef DEBUG_RANGER
@@ -105,6 +106,7 @@ void setup() {
   setupTune();
   setupLedstrip();
   setupSimulator();
+  setupObstacles();
 
  setMotorPercent( 255 );
 }
@@ -125,6 +127,11 @@ void loop()
 
   int beat = getBeat();
   
+  if( isObstacle( this_beat_range, angle ))
+    this_beat_range = 0; // ignore the obstacle
+    
+  
+  
   if( beat != last_beat ) // Time to start a note!
   {
 
@@ -140,9 +147,11 @@ void loop()
 
 }
 
-int getBeat() {
-   angle = (((millis() - sweep_start_time) * 180L) / millis_per_sweep) % 180L;
-   return (angle * beats_per_sweep ) / 180; 
+int getBeat()
+{
+  angle = (((millis() - sweep_start_time) * 360L) / millis_per_sweep) % 360L;
+  int beat =  (angle * beats_per_sweep ) / 360;
+  return beat;
 }
 
 void doBeat( int beat )
