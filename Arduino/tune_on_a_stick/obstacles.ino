@@ -21,11 +21,14 @@ int setupObstacles()
 
 int isObstacle( int range, long angle )
 {
-  int result = false;
   
-#ifdef DEBUG_RANGER
-  return false;
-#endif
+  
+  //return false; // currently not reliable enough to use - too much sensor jitter
+  
+  
+  
+  
+  int result = false;
   
   if( ! goodRange( range ))
     return false;
@@ -39,13 +42,22 @@ int isObstacle( int range, long angle )
   if( abs( range - current ) < RANGE_MARGIN ) // matches existing max
   {
     if( o != lastO )
+    {
       obstacleCount[o]++;
+    #ifdef DEBUG
+     Serial.print("Increased count ");
+    Serial.print(obstacleCount[o]);
+    Serial.print(" range ");
+    Serial.print(range); 
+    Serial.println(" cm");
+    #endif
+    }
     
-    
-    if( obstacleCount[o] > 4 ) // ignore it if we've seen it lots of times in a row
+    if( obstacleCount[o] > 12 ) // ignore it if we've seen it lots of times in a row
     {
 #ifdef DEBUG
-
+    if( o != lastO )
+    {
     Serial.print("Rejecting obstacle index ");
     Serial.print(o);
     Serial.print(" count ");
@@ -53,7 +65,7 @@ int isObstacle( int range, long angle )
     Serial.print(" range ");
     Serial.print(range); 
     Serial.println(" cm");
-    
+    }
 #endif
       result = true;
     }

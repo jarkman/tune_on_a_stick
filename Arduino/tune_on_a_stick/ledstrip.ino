@@ -38,6 +38,14 @@ void loopLedstrip(uint32_t c) {
 
 int showRangeOnStrip( int range )
 {
+  uint32_t targetC = 0x0404;
+  
+  if( range < 0 ) // obstacle
+   {
+     range = 50;
+     targetC = 0x000800;
+   }
+   
      for(int i=0; i<strip.numPixels(); i++) 
      {
        uint32_t c = 0;
@@ -45,7 +53,7 @@ int showRangeOnStrip( int range )
        int limit = (range * STRIP_LEN) / (2 * max_range);
        
        if( abs( n - limit)  < 3 )
-         c = 0x0404;
+         c = targetC;
          
       strip.setPixelColor(i, c);
     }

@@ -1,11 +1,11 @@
 
 #include <Servo.h> 
 
-//#define DEBUG
+#define DEBUG
 
 //#define SIMULATOR  // simulate range data
 //#define SIMULATE_ROTATION
-//#define DEBUG_RANGER // use led strip as range bargraph
+#define DEBUG_RANGER // use led strip as range bargraph
 
 //#define USE_SERVO // Servo used to simulate rotation before the real rotating rig was available
 //#define SPARKFUN_SHIELD
@@ -128,7 +128,7 @@ void loop()
   int beat = getBeat();
   
   if( isObstacle( this_beat_range, angle ))
-    this_beat_range = 0; // ignore the obstacle
+    this_beat_range = -1; // ignore the obstacle
     
   
   
@@ -232,7 +232,7 @@ void doBeat( int beat )
     
    }
    
-    if( got_range )
+  if( got_range )
     {
   
        // scale range to 0->256
@@ -272,10 +272,13 @@ void doBeat( int beat )
           rgb( brightness, 0,0,128 , fade_duration ); 
       }
       else
-        if( beat % 2 == 0 ) // alternate coloyrs
-          rgb( brightness, 64,256,64 , fade_duration ); 
-        else
-           rgb( brightness, 64,64,256 , fade_duration ); 
+         if( this_beat_range == -1 )
+            rgb( brightness, 128,0,0 , fade_duration ); // obstacles are green
+         else 
+            if( beat % 2 == 0 ) // alternate coloyrs
+                rgb( brightness, 64,256,64 , fade_duration ); 
+            else
+               rgb( brightness, 64,64,256 , fade_duration ); 
          
       num_no_people ++;
       
