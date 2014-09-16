@@ -1,11 +1,11 @@
 
 #include <Servo.h> 
 
-#define DEBUG
+//#define DEBUG
 
 //#define SIMULATOR  // simulate range data
 //#define SIMULATE_ROTATION
-#define DEBUG_RANGER // use led strip as range bargraph
+//#define DEBUG_RANGER // use led strip as range bargraph
 
 //#define USE_SERVO // Servo used to simulate rotation before the real rotating rig was available
 //#define SPARKFUN_SHIELD

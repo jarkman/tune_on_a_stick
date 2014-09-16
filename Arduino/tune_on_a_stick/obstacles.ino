@@ -72,8 +72,11 @@ int isObstacle( int range, long angle )
   }
   else if( range > current ) // new max, record it
   {
+    if( o != lastO )
+    {
      obstacleRange[o] = range;
      obstacleCount[o] = 0;
+    }
   }
   
   lastO = o;
