@@ -35,13 +35,15 @@ int isObstacle( int range, long angle )
   
   int o = (angle * NUM_OBSTACLES)/360;
   
+  long current = obstacleRange[o];
+ 
+  if( abs( range - current ) < RANGE_MARGIN ) 
+      result = true;
+      
   if( o != lastO )
   {
-    // new slot
-    long current = obstacleRange[o];
- 
-    if( abs( range - current ) < RANGE_MARGIN ) 
-      result = true;
+    // new slot - only want to average one per slot
+    
       
     
     // rolling average

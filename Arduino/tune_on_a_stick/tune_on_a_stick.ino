@@ -255,11 +255,9 @@ void doBeat( int beat )
         b = 0;
       }
       
-      if( num_startle > 3 )  
+      if( num_startle > 4 )  
            startIdle();  
            
-      if( beat == 0 )
-            num_startle = 0;
             
             
   
@@ -277,6 +275,8 @@ void doBeat( int beat )
     }
     else
     {
+      num_startle = 0; // so we need consecuive startles
+       
       if( state == STATE_IDLE )
       {
         // fade LED action out over many bars
@@ -307,6 +307,10 @@ void doBeat( int beat )
       if( num_no_people >= IDLE_SWEEPS * beats_per_sweep  )
         startIdle();
     }
+    
+
+ 
+ 
 }
 
 int R( uint32_t rgb )

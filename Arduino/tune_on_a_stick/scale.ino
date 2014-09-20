@@ -32,7 +32,7 @@ void pickRandomScale()
     int scale = pickScaleFromPosition();
   
   // rootNote (lowest note in the list of allowed active notes) varies, but only for large movements 
-  int rootNote = 40 + random(20); 
+  int rootNote = 45 + random(15); 
   
 #ifdef DEBUG
 
@@ -96,7 +96,8 @@ void setupBars()
   //millis_per_sweep = 1500 + random(1500);
   
   beats_per_bar = 4 + random( 2 );
-  bars_per_sweep = 10 / beats_per_bar; // 2 or 1
+  //bars_per_sweep = 10 / beats_per_bar; // 2 or 1
+  bars_per_sweep = (10 + random(2) * 2) / beats_per_bar; // 3 or 2 or 1
   beats_per_sweep = beats_per_bar * bars_per_sweep;
   beat_duration = millis_per_sweep / beats_per_sweep;
   fade_duration = beat_duration/2;
