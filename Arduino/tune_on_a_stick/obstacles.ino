@@ -10,11 +10,13 @@ int obstacleCount[NUM_OBSTACLES];
 
 int lastO = -1;
 
+#define ROLLING_FRACTION 100L
+
 int setupObstacles()
 {
   for( int o = 0; o < NUM_OBSTACLES; o ++ )
   {
-    obstacleRange[o] = 0;
+    obstacleRange[o] = 300;
     obstacleCount[o] = 0;
   }
 }
@@ -24,18 +26,39 @@ int isObstacle( int range, long angle )
   
   
   //return false; // currently not reliable enough to use - too much sensor jitter
-  
-  
-  
+
   
   int result = false;
   
-  if( ! goodRange( range ))
+  if( range < MIN_DISTANCE) // no object or very close object
     return false;
-  
   
   int o = (angle * NUM_OBSTACLES)/360;
   
+  if( o != lastO )
+  {
+    // new slot
+    long current = obstacleRange[o];
+ 
+    if( abs( range - current ) < RANGE_MARGIN ) 
+      result = true;
+      
+    
+    // rolling average
+    current = (current * (1000L - ROLLING_FRACTION) + (long) range * ROLLING_FRACTION) / 1000L;
+    
+    obstacleRange[o] = current;
+    
+    lastO = o;
+  }
+  
+  
+
+  return result;
+}
+
+
+/*
 
   int current = obstacleRange[o];
   
@@ -83,4 +106,5 @@ int isObstacle( int range, long angle )
 
   return result;
 }
+*/
 

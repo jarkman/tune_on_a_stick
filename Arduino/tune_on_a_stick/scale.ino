@@ -32,7 +32,7 @@ void pickRandomScale()
     int scale = pickScaleFromPosition();
   
   // rootNote (lowest note in the list of allowed active notes) varies, but only for large movements 
-  int rootNote = 50 + random(20); 
+  int rootNote = 40 + random(20); 
   
 #ifdef DEBUG
 
@@ -111,7 +111,11 @@ int pickScaleFromPosition()
 int noteForRange( int cm, int channel )
 {
   int index = ((max_range - cm) * numActives[channel]) / max_range; 
-  return activeNotes[channel][index];
+  int note = activeNotes[channel][index];
+  if( startleRange( cm ) )
+    note += 12; // startled!
+    
+  return note;
 }
 
 // Find an active note offset from the given note, useful for generating harmonies

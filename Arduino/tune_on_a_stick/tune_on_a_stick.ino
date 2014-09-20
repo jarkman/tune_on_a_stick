@@ -39,7 +39,7 @@
 #define HARMONY_LINE 2
 
 
-#define MIN_DISTANCE 50 // cm
+#define MIN_DISTANCE 50 // cm - ranger never reports much less than 40
 
 #define IDLE_SWEEPS 2 // if we see no people for this long, go idle
 
@@ -77,6 +77,7 @@ long beat_start_time = 0;
 
 int num_no_people = 0;
 int num_tune_bars = 0;
+int num_startle = 0;
 
 long num_total_beats = 0;
 
@@ -93,6 +94,7 @@ void setup() {
    
   setup_ranger();
   
+  randomSeed( read_ranger() );
 #ifdef USE_SERVO
   myservo.attach(SERVO_PIN); 
 #endif
@@ -243,6 +245,23 @@ void doBeat( int beat )
        int g = G( rgbc );
        int b = B( rgbc );
        
+       
+        // require three starles in a rev to randomise
+      if( startleRange( this_beat_range ) )
+      {
+        num_startle ++;
+        r = 0;
+        g = 0;
+        b = 0;
+      }
+      
+      if( num_startle > 3 )  
+           startIdle();  
+           
+      if( beat == 0 )
+            num_startle = 0;
+            
+            
   
       if( beat % 2 == 0 ) // alternate coloyrs
          rgb( brightness, r,g,b , fade_duration ); 
@@ -250,6 +269,9 @@ void doBeat( int beat )
          rgb( brightness, r,g,b , fade_duration ); 
    
       num_no_people = 0;
+      
+      
+     
  
       
     }
@@ -322,9 +344,18 @@ void startIdle()
   num_tune_bars = 0;
 }
 
+
+boolean startleRange( int range )
+{
+  return range > 0 && range < MIN_DISTANCE;
+
+}
+
+
 boolean goodRange( int range )
 {
-  return range > MIN_DISTANCE && range < max_range;
+  //return range > MIN_DISTANCE && range < max_range;
+  return range < max_range;
 }
 
 void newTune()
