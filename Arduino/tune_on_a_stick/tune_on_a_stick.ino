@@ -78,6 +78,7 @@ long beat_start_time = 0;
 int num_no_people = 0;
 int num_tune_bars = 0;
 int num_startle = 0;
+int num_idle_beats = 0;
 
 long num_total_beats = 0;
 
@@ -189,7 +190,8 @@ void doBeat( int beat )
 
     boolean got_range = false;
     
-    if( goodRange( this_beat_range )) // min range to screen out junk on desk
+    if( goodRange( this_beat_range ) && 
+      (state != STATE_IDLE || num_idle_beats > 20 )) // enfore idle break between tunes
     {
       if( state != STATE_PLAYING ) {
         startPlaying();
@@ -224,6 +226,8 @@ void doBeat( int beat )
  
    if( state == STATE_IDLE )
    {
+     num_idle_beats ++;
+     
        brightness -= num_no_people;
       if( brightness < 32)
         brightness = 32;
@@ -233,6 +237,11 @@ void doBeat( int beat )
      
     
    }
+   else
+   {
+     num_idle_beats = 0;
+   }
+   
    
   if( got_range )
     {
