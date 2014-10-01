@@ -66,7 +66,8 @@ int generateBacking( int beat )
    // It is numActives[LEAD_CHANNEL] long.
 
   if (note > 0) {
-    note -= 24;      // shift it down a couple of octaves
+    //note -= 24;      // shift it down a couple of octaves
+    note -= 12;      // shift it down a couple of octaves
   } 
   else {
     // if no lead note, 50% chance to leave backing as it was last time around

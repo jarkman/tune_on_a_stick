@@ -1,5 +1,6 @@
 
-#define NUM_ACTIVES 12
+//#define NUM_ACTIVES 12
+#define NUM_ACTIVES 8
 #define NUM_SCALES 1
 
 
@@ -32,7 +33,8 @@ void pickRandomScale()
     int scale = pickScaleFromPosition();
   
   // rootNote (lowest note in the list of allowed active notes) varies, but only for large movements 
-  int rootNote = 50 + random(15); 
+  int rootNote = 50 + random(12); 
+
   
 #ifdef DEBUG
 
