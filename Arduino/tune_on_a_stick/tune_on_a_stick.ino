@@ -1,10 +1,10 @@
 
 #include <Servo.h> 
 
-//#define DEBUG
+#define DEBUG
 
-//#define SIMULATOR  // simulate range data
-//#define SIMULATE_ROTATION
+#define SIMULATOR  // simulate range data
+#define SIMULATE_ROTATION
 //#define DEBUG_RANGER // use led strip as range bargraph
 
 //#define USE_SERVO // Servo used to simulate rotation before the real rotating rig was available
@@ -30,7 +30,6 @@
 
 #define MAX_BEATS_PER_BAR 6
 #define MAX_BARS_PER_SWEEP 3
-
 
 #define TUNE_LIST_SIZE MAX_BEATS_PER_BAR * MAX_BARS_PER_SWEEP
 #define LINES 3
@@ -66,7 +65,7 @@ Servo myservo;
 
 long angle = 0;
 long sweep_start_time = 0;
-long millis_per_sweep = 3000; // overwritten by loopSpeed
+long millis_per_sweep = 3000; // overwritten by loopSpeed() in speed.cpp
 int beats_per_bar = 4;
 int bars_per_sweep = 8;
 int beats_per_sweep;
@@ -83,7 +82,11 @@ int num_idle_beats = 0;
 long num_total_beats = 0;
 
 int this_beat_range = 0;
+// phill changed
+//int max_range = 200;  // overwritten by max range from pot in read_ranger
 int max_range = 200;  // overwritten by max range from pot in read_ranger
+
+boolean is_tune_dub_reggae = false;
 
 void setup() {
   
@@ -160,14 +163,6 @@ int getBeat()
 void doBeat( int beat )
 {
   
-#ifdef DEBUG
-
-    Serial.print("Beat range: ");
-    Serial.print(this_beat_range); // Convert ping time to distance in cm and print result (0 = outside set distance range)
-    Serial.println("cm");
-    
-#endif
-
     num_total_beats++;
 
     last_beat = beat;
@@ -177,19 +172,15 @@ void doBeat( int beat )
     if( beat % beats_per_bar == 0 ) // Start of bar
     {
       num_tune_bars ++;
-      midi_boom();
       doBackingVolume();
     }
-    else
-       midi_tish(); // Start of note, not at start of bar
     
- #ifdef DEBUG_RANGER
+    
+#ifdef DEBUG_RANGER
       showRangeOnStrip( this_beat_range );
 #endif
 
-
     boolean got_range = false;
-    
     if( goodRange( this_beat_range ) && 
       (state != STATE_IDLE || num_idle_beats > 20 )) // enfore idle break between tunes
     {
@@ -199,10 +190,15 @@ void doBeat( int beat )
         beat = getBeat();
         last_beat = beat;
       }
-        
+
+// phill moved
+#ifdef DEBUG
+      Serial.print("Beat range: ");
+      Serial.print(this_beat_range); // Convert ping time to distance in cm and print result (0 = outside set distance range)
+      Serial.println("cm");
+#endif        
 
       int note = noteForRange( this_beat_range, LEAD_CHANNEL );
-      
       
       setAndPlayNote( LEAD_LINE, beat, note );
       
@@ -367,16 +363,21 @@ boolean startleRange( int range )
 
 boolean goodRange( int range )
 {
-  //return range > MIN_DISTANCE && range < max_range;
-  return range < max_range;
+  // phill
+  // return range < max_range;
+  return range > MIN_DISTANCE && range < max_range;
 }
 
 void newTune()
 {
+  clearTune(); // reset the tune
+  
   midiAllNotesOff(0);
   midiAllNotesOff(1);
   midiAllNotesOff(2);
-  clearTune();
+  midiAllNotesOff(11); // dub reggae muted guitar channel
+  
+  midiSetInstrument(11, 29); // dub reggae muted guitar
   pickRandomInstruments();
   pickRandomScale();
   

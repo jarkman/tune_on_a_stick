@@ -17,6 +17,7 @@
 #define VS1053_GM1_ACOUSTIC_GRAND_PIANO 0x01
 #define VS1053_GM1_HONKY_TONK_PIANO 4
 #define VS1053_GM1_ELECTRCIC_GUITAR_JAZZ 27
+
 #define VS1053_GM1_MUTED_TRUMPET 60
 #define VS1053_GM1_OCARINA 80
 #define VS1053_GM1_MELODIC_TOM 118
@@ -119,11 +120,19 @@ void midi_note_off( int line, int note )
       midiNoteOff(line, note, 127);
 }
 
+// kick drum
 void midi_boom( )
 {
       midiNoteOn(PERCUSSION_CHANNEL, 35, 127);
 }
 
+// snare rimshot
+void midi_crack( )
+{
+      midiNoteOn(PERCUSSION_CHANNEL, 39, 127);
+}
+
+// hihat
 void midi_tish( )
 {
       midiNoteOn(PERCUSSION_CHANNEL, 42, 127);

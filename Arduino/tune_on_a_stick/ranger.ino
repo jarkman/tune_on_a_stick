@@ -65,17 +65,18 @@ int read_ranger()
 #endif
   
 #ifdef SIMULATOR
-  max_range = 200;
+    // phill changed 
+    // this is set global in tune_on_a_stick.cpp
+    //max_range = 200;
 #else
   
-  max_range = (float) analogRead( MAX_RANGE_PIN ) * 500.0 / 1023.0;
-    
-  #ifdef DEBUG
-    //Serial.print(max_range); 
-    //Serial.println(" max_range");
-#endif
+    max_range = (float) analogRead( MAX_RANGE_PIN ) * 500.0 / 1023.0;
 #endif
 
+//#ifdef DEBUG
+//    Serial.print("Max_range: ");
+//    Serial.println(max_range); 
+//#endif
 
     return range_in_cm; // take the closest valid range during the period of this beat
 }

@@ -10,6 +10,7 @@ long indexStartTime = 0;
 
 int setupSpeed()
 {
+  
 #ifdef SIMULATE_ROTATION
   millis_per_sweep = 3000;
 #endif 

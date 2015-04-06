@@ -94,10 +94,20 @@ void pickRandomScale()
 }
 
 void setupBars()
-{
-  //millis_per_sweep = 1500 + random(1500);
+{ 
+  // 1 in 6 chance of a dub reggae riddim
+  if ( random(5) == 0 )
+  {
+    Serial.println("dub reggae riddim");
+    is_tune_dub_reggae = true;
+    beats_per_bar = 4;
+  }
+  else
+  {
+    beats_per_bar = 4 + random( 2 );
+    is_tune_dub_reggae = false;
+  }
   
-  beats_per_bar = 4 + random( 2 );
   bars_per_sweep = 10 / beats_per_bar; // 2 or 1
   //bars_per_sweep = (10 + random(2) * 2) / beats_per_bar; // 3 or 2 or 1
   beats_per_sweep = beats_per_bar * bars_per_sweep;
@@ -115,6 +125,21 @@ int noteForRange( int cm, int channel )
 {
   int index = ((max_range - cm) * numActives[channel]) / max_range; 
   int note = activeNotes[channel][index];
+
+/*
+// phill added this while debugging some simulator range problems
+#ifdef DEBUG
+  Serial.print("noteForRange( ");
+  Serial.print(cm);
+  Serial.print(", ");
+  Serial.print(channel);
+  Serial.print(") Index:");
+  Serial.print(index);
+  Serial.print(", Note:");
+  Serial.println(note);
+#endif
+*/
+
   if( startleRange( cm ) )
     note += 12; // startled!
     

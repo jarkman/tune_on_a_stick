@@ -31,9 +31,9 @@ int simulatorRange( int beat ) // return a simulated range for this beat
     
   if( totalSweeps <= IDLE_SWEEPS )
    {
+     
 #ifdef DEBUG
     Serial.println("Simulating idle");
-
 #endif
     return 0;
   }    
@@ -48,13 +48,17 @@ int simulatorRange( int beat ) // return a simulated range for this beat
     if( random( 2 ) == 0 ) // notes will often become silent
       rangeForBeat[beat] = 0; // no person detected
     else
-      rangeForBeat[beat] = max_range + random( max_range - MIN_DISTANCE ); // pick a random valid range for this person
+      // phill changed
+      //rangeForBeat[beat] = max_range + random( max_range - MIN_DISTANCE ); // pick a random valid range for this person
+      rangeForBeat[beat] = random( max_range - MIN_DISTANCE ); // pick a random valid range for this person
   }
       
 #ifdef DEBUG
-
     Serial.print("Simulated range: ");
-    Serial.println(rangeForBeat[beat]);    
+    Serial.print(rangeForBeat[beat]);    
+    Serial.print(" ");
+    Serial.print("Max_range: ");
+    Serial.println(max_range); 
 #endif
     
   return rangeForBeat[beat];
