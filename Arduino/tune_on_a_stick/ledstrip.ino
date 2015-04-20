@@ -18,6 +18,8 @@ void setupLedstrip() {
 }
 
 long lastT = 0;
+int twinkle = 0;
+int rgy = 0;
 
 void loopLedstrip(uint32_t c) {
   
@@ -30,6 +32,23 @@ void loopLedstrip(uint32_t c) {
   {
     lastT = now;
   
+    if( is_tune_dub_reggae )
+    {
+      twinkle++;
+      if( twinkle > 16 )
+      {
+        rgy  = (rgy + 1 ) % 3;
+        if( rgy == 0 )
+          c = colorForRGB( 128, 0, 0 );
+        else if( rgy == 1 )
+          c = colorForRGB( 0, 128, 0 );
+        else if( rgy == 2 )
+          c = colorForRGB( 128, 128, 0 );
+        
+        twinkle = 0;
+      }
+    }
+    
       wipeOut( c );
       strip.show();   
 
@@ -82,7 +101,7 @@ void wrainbow(uint8_t wait) {
 
 void wipeOut(uint32_t c) {
   
-  int half = strip.numPixels()/2;
+  int half = strip.numPixels()/2; // halfway along
   
  
    uint32_t prev = strip.getPixelColor(half);
