@@ -4,7 +4,7 @@
 //#define DEBUG
 
 //#define SIMULATOR  // simulate range data
-//#define SIMULATE_ROTATIONbghn
+//#define SIMULATE_ROTATION
 
 //#define DEBUG_RANGER // use led strip as range bargraph
 
@@ -134,9 +134,11 @@ void loop()
 
   int beat = getBeat();
   
+  #ifndef DEBUG_RANGER
   if( isObstacle( this_beat_range, angle ))
     this_beat_range = -1; // ignore the obstacle
-    
+  #endif
+ 
   
   
   if( beat != last_beat ) // Time to start a note!
@@ -364,8 +366,10 @@ boolean startleRange( int range )
 
 boolean goodRange( int range )
 {
-  // phill
-  // return range < max_range;
+  // pre-phill hadf
+  //return range < max_range;
+  
+  // phill had
   return range > MIN_DISTANCE && range < max_range;
 }
 

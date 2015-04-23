@@ -23,8 +23,7 @@ int setupObstacles()
 
 int isObstacle( int range, long angle )
 {
-  
-  
+
   //return false; // currently not reliable enough to use - too much sensor jitter
 
   
